@@ -1,0 +1,12 @@
+iframe {
+	width: 82%;
+	height: 800px;
+	/*border: 1px solid;*/
+}
+
+div.main {
+	width: 350px;
+	height: 100%;
+	margin: 0 auto;
+	/*border: 1px solid;*/
+}
