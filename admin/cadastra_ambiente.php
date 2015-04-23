@@ -28,10 +28,10 @@
 					require "../class_sala.php";
 					
 	      			$conexao=new Banco($ip,$usuario,$senha,$bd); 
-	      			$conexao->Conecta();
+	      			$con = $conexao->Conecta();
 	      
 	      			$query = "SELECT id,descricao FROM tipo_sala";
-	      			$consulta = mysql_query($query) or die(mysql_error ());
+	      			$consulta = mysqli_query($con,$query) or die(mysql_error ());
 
 				?>
 
@@ -41,7 +41,7 @@
   					echo '<option>Tipo</option>';
 
   					// Armazena os dados da consulta em um array associativo
-  					while($registro = mysql_fetch_assoc($consulta)) {
+  					while($registro = mysqli_fetch_assoc($consulta)) {
         				echo '<option value='.$registro["id"].'>'.$registro["descricao"].'</option>';
   					}
   				?>
@@ -52,11 +52,11 @@
 					<?php
 						$select = 'SELECT recursos.id, recursos.nome FROM recursos ORDER BY id ASC';
 
-						$retorno = mysql_query($select) or die (mysql_error());
+						$retorno = mysqli_query($con,$select) or die (mysql_error());
 						
 						$i=0;
 						
-						while ($result = mysql_fetch_assoc($retorno))
+						while ($result = mysqli_fetch_assoc($retorno))
 						{
 							echo "<tr id=".$result['nome'].">";
 							echo "<td><input type='checkbox' id=cb".$result['nome']." name='recursos".$i++."' value=".$result['id'].">&nbsp;".$result['nome']."</td>";
@@ -68,7 +68,7 @@
 				<input type="text" class="form-control input-sm" name="capacidade" placeholder="Capacidade" title="Capacidade" required><br>
 				<?php
       				$query = "SELECT id,descricao FROM blocos";
-      				$consulta = mysql_query($query) or die(mysql_error ());
+      				$consulta = mysqli_query($con,$query) or die(mysql_error ());
       			?>
 
 				<select class="form-control input-sm" name="bloco">
@@ -77,7 +77,7 @@
       				echo '<option>Bloco</option>';
   
       				// Armazena os dados da consulta em um array associativo
-      				while($registro = mysql_fetch_assoc($consulta)) {
+      				while($registro = mysqli_fetch_assoc($consulta)) {
 	        			echo '<option value='.$registro["id"].'>'.$registro["descricao"].'</option>';
       				}
       			?>
@@ -100,8 +100,8 @@
 		$id_tipo=$_POST['tipo'];
 		
 		$select = 'SELECT recursos.id, recursos.nome FROM recursos ORDER BY id ASC';
-		$retorno = mysql_query($select) or die (mysql_error());
-		$numeroRecursos = mysql_num_rows($retorno);
+		$retorno = mysqli_query($con,$select) or die (mysql_error());
+		$numeroRecursos = mysqli_num_rows($retorno);
 		for($i=0;$i<$numeroRecursos;$i++){
 			if(isset($_POST["recursos".$i])){
 				$recursos[$i]=$_POST["recursos".$i]." ";
@@ -128,10 +128,10 @@
 		$hora = date("H:i");
 
 		$sala=new Sala();
-		$sala->insereSala($nome,$id_tipo,$capacidade,$obs,$data,$hora,$id_bloco);
+		$sala->insereSala($con,$nome,$id_tipo,$capacidade,$obs,$data,$hora,$id_bloco);
 
 		$recurso=new Sala();
-		$recurso->gravaRecurso($recursos,$quantidade);
+		$recurso->gravaRecurso($con,$recursos,$quantidade);
 		
 		$conexao->Disconecta(); //fecha conexão
 	}

@@ -7,14 +7,14 @@
 	$conexao=new Banco($ip,$usuario,$senha,$bd); //instancia banco
 	
 	try {
-		$conexao->Conecta(); //abre conexão ao banco
+		$con = $conexao->Conecta(); //abre conexão ao banco
 	} catch (Exception $erro) {
 		echo $erro->getMessage();
 		exit();
 	}
 
 	$salas=new Sala();
-	$salas->listaSala();
+	$salas->listaSala($con);
 	
 	$conexao->Disconecta(); //fecha conexão
 ?>

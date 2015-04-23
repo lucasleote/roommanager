@@ -1,6 +1,7 @@
-<!--<html>
-	<img src="img/dashboard.png">
-</html>-->
+<?php
+			ob_start() ;
+			session_start();
+?>
 
 <html>
 
@@ -22,7 +23,6 @@
 	<body>
 		<center>
 		<?php
-			session_start();
 			echo "<big><br><br>Olá <b>".$_SESSION['nome']."</b>! Bem-vindo ao <i>RoomManager</i>.<br><br>Navegue nos menus a esquerda.</big>";
 		?>
 		<br><br><img src="img/logo_if.png">

@@ -27,14 +27,16 @@
 		//Método que abre conexão ao banco
 		function Conecta()
 		{
-			mysql_set_charset('utf8',$this->conecta=mysql_connect($this->ip,$this->usuario,$this->senha)) or die (mysql_error ());
-			mysql_select_db($this->bd,$this->conecta) or die(mysql_error());
+			$this->conecta=mysqli_connect($this->ip,$this->usuario,$this->senha) or die (mysql_error ());
+			mysqli_set_charset($this->conecta,"utf8");
+			mysqli_select_db($this->conecta,$this->bd) or die(mysql_error());
+			return $this->conecta;
 		}
 		
 		//Método que fecha conexão do banco
 		function Disconecta()
 		{
-			mysql_close($this->conecta);
+			mysqli_close($this->conecta);
 			//echo "disconectei";
 		}
 	}

@@ -27,10 +27,10 @@
 					require "../class_patrimonio.php";
 					
 	      			$conexao=new Banco($ip,$usuario,$senha,$bd); 
-	      			$conexao->Conecta();
+	      			$con = $conexao->Conecta();
 	      
 	      			$query = "SELECT id,descricao FROM tipo_patrimonio";
-	      			$consulta = mysql_query($query) or die(mysql_error ());
+	      			$consulta = mysqli_query($con,$query) or die(mysql_error ());
 
 				?>
 
@@ -40,7 +40,7 @@
   					echo '<option>Categoria</option>';
 
   					// Armazena os dados da consulta em um array associativo
-  					while($registro = mysql_fetch_assoc($consulta)) {
+  					while($registro = mysqli_fetch_assoc($consulta)) {
         				echo '<option value='.$registro["id"].'>'.$registro["descricao"].'</option>';
   					}
   				?>
@@ -69,7 +69,7 @@
 		$hora = date("H:i");
 
 		$patrimonio=new Patrimonio();
-		$patrimonio->inserePatrimonio($nome,$id_tipo,$obs,$data,$hora);
+		$patrimonio->inserePatrimonio($con,$nome,$id_tipo,$obs,$data,$hora);
 		
 		$conexao->Disconecta();
 	}

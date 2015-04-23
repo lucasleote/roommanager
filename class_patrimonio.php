@@ -94,13 +94,13 @@
 		}
 
 		//Método que insere novo patrimônio no banco
-		function inserePatrimonio($nome,$id_tipo,$obs,$data,$hora)
+		function inserePatrimonio($con,$nome,$id_tipo,$obs,$data,$hora)
 		{
 			$query = "SELECT nome FROM patrimonios WHERE nome LIKE '$nome' ";
 			
-			mysql_query($query);
+			mysqli_query($con,$query);
 			
-			if (mysql_affected_rows()>0) {
+			if (mysqli_affected_rows()>0) {
 				echo '<script language="javascript">
 				alert("Já existente um patrimônio com esse nome!\n\nEscolha outro.");
 				</script>';
@@ -109,7 +109,7 @@
 			else { 
 
 				$sql="INSERT INTO patrimonios (id,nome,id_tipo,obs,data,hora) VALUES ('NULL','$nome','$id_tipo','$obs','$data','$hora')";
-				mysql_query($sql) or die(mysql_error ());
+				mysqli_query($con,$sql) or die(mysql_error ());
 
 				echo "<script language='javascript'>
 				alert('Patrimônio cadastrado com sucesso!');

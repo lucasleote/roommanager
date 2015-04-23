@@ -50,14 +50,14 @@ error_reporting(0);
     $conexao=new Banco($ip,$usuario,$senha,$bd); //instancia banco
 
     try {
-      $conexao->Conecta(); //abre conexão ao banco
+     $con =  $conexao->Conecta(); //abre conexão ao banco
     } catch (Exception $erro) {
       echo $erro->getMessage();
     exit();
     }
 
     $usuarios=new Usuario();
-    $usuarios->validaUsuario($username,$passwd);
+    $usuarios->validaUsuario($con,$username,$passwd);
   }
 
   if(isset($_POST["calendario"])) {

@@ -4,7 +4,7 @@
 	require "../class_usuario.php";
 	
 	$conexao=new Banco($ip,$usuario,$senha,$bd); 
-	$conexao->Conecta();
+	$con = $conexao->Conecta();
 
 	date_default_timezone_set('America/Sao_Paulo');
 	$data=date("Y-m-d");
@@ -38,14 +38,14 @@
 		<form class="form-inline" action="" method="POST">
   			<?php
       				$query = "SELECT id,descricao FROM blocos";
-      				$consulta = mysql_query($query) or die(mysql_error ());
+      				$consulta = mysqli_query($con,$query) or die(mysql_error ());
       			?>
 
 				<b>Bloco:</b> <select class="form-control input-sm" name="bloco">
 
 				<?php
       				// Armazena os dados da consulta em um array associativo
-      				while($registro = mysql_fetch_assoc($consulta)) {
+      				while($registro = mysqli_fetch_assoc($consulta)) {
 	        			echo '<option value='.$registro["id"].'>'.$registro["descricao"].'</option>';
       				}
       			?>
@@ -63,7 +63,7 @@
 			$bloco=$_POST['bloco'];
 
 			$salas=new Sala();
-			$salas->listaSalaBloco($data,$bloco);
+			$salas->listaSalaBloco($con,$data,$bloco);
 		
 			$conexao->Disconecta(); //fecha conexão
 

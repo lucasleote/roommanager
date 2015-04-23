@@ -34,14 +34,14 @@
 					$conexao=new Banco($ip,$usuario,$senha,$bd); //instancia banco
 	
 					try {
-						$conexao->Conecta(); //abre conexão ao banco
+						$con = $conexao->Conecta(); //abre conexão ao banco
 					} catch (Exception $erro) {
 						echo $erro->getMessage();
 						exit();
 					}
 
 					$query = "SELECT id,descricao FROM tipo_usuario";
-					$consulta = mysql_query($query) or die(mysql_error ());
+					$consulta = mysqli_query($con,$query) or die(mysql_error ());
 
 				?>
 				<select class="form-control input-sm" name="tipo">
@@ -49,7 +49,7 @@
 					echo '<option value="null">Perfil</option>';
 
 					// Armazena os dados da consulta em um array associativo
-					while($registro = mysql_fetch_assoc($consulta)) {
+					while($registro = mysqli_fetch_assoc($consulta)) {
 						echo '<option value='.$registro["id"].'>'.$registro["descricao"].'</option>';
 					}
 
@@ -86,14 +86,14 @@
 		$conexao=new Banco($ip,$usuario,$senha,$bd); //instancia banco
 	
 		try {
-			$conexao->Conecta(); //abre conexão ao banco
+			$con = $conexao->Conecta(); //abre conexão ao banco
 		} catch (Exception $erro) {
 			echo $erro->getMessage();
 			exit();
 		}
 
 		$usuarios=new Usuario();
-		$usuarios->insereUsuario($nome,$cpf,$telefone,$email,$username,$passwd,$obs,$data,$hora,$id_tipo);
+		$usuarios->insereUsuario($con,$nome,$cpf,$telefone,$email,$username,$passwd,$obs,$data,$hora,$id_tipo);
 		
 		$conexao->Disconecta();
 	}

@@ -28,13 +28,13 @@
 		Private $id_bloco;
 
 		//Método que cadastra nova sala no banco
-		function insereSala($nome,$id_tipo,$capacidade,$obs,$data,$hora,$id_bloco)
+		function insereSala($con,$nome,$id_tipo,$capacidade,$obs,$data,$hora,$id_bloco)
 		{			
 			$query = "SELECT nome FROM salas WHERE nome='$nome' AND id_bloco='$id_bloco' ";
 			
-			mysql_query($query) or die(mysql_error ());
+			mysqli_query($con,$query) or die(mysql_error ());
 			
-			if (mysql_affected_rows()>0) {
+			if (mysqli_affected_rows()>0) {
 				echo '<script language="javascript">
 				alert("Ambiente já existente com esse nome nesse bloco!\n\nEscolha outro.");
 				</script>';
@@ -43,7 +43,7 @@
 			else { 
 
 				$sql="INSERT INTO salas (id,nome,id_tipo,capacidade,obs,data,hora,id_bloco) VALUES ('NULL','$nome','$id_tipo','$capacidade','$obs','$data','$hora','$id_bloco')";
-				mysql_query($sql) or die(mysql_error ());
+				mysqli_query($con,$sql) or die(mysql_error ());
 
 				/*echo "<script language='javascript'>
 				alert('Ambiente cadastrado com sucesso!');
@@ -52,15 +52,15 @@
 			}
 		}
 
-		function gravaRecurso($recursos,$quantidade)
+		function gravaRecurso($con,$recursos,$quantidade)
 		{
 			global $id_sala;
 
 			$select = "SELECT MAX(id) AS id FROM salas";
-			$retorno = mysql_query($select) or die(mysql_error ());
+			$retorno = mysqli_query($con,$select) or die(mysql_error ());
 			$retorno;
 
-			while ($result = mysql_fetch_assoc($retorno))
+			while ($result = mysqli_fetch_assoc($retorno))
 			{
 				$id_sala = $result['id'];
 			}
@@ -74,7 +74,7 @@
 				} else {
 					$sql="INSERT INTO salarecurso (id,id_recurso,id_sala,quantidade) VALUES ('NULL','$i','$id_sala',1)";
 				}
-				mysql_query($sql);
+				mysqli_query($con,$sql);
 			}	
 
 			echo "<script language='javascript'>
@@ -111,7 +111,7 @@
 		}
 
 		//Método que lista as salas cadastradas
-		function listaSala()
+		function listaSala($con)
 		{ 
 			echo "<br><center><h3><span class='glyphicon glyphicon-home' aria-hidden='true'></span> Ambientes cadastrados no sistema</h3></center><br>";
 
@@ -135,11 +135,11 @@
 			WHERE salas.id_tipo = tipo_sala.id AND salas.id_bloco = blocos.id 
 			ORDER BY id DESC';
 
-			$retorno = mysql_query($select) or die (mysql_error());
+			$retorno = mysqli_query($con,$select) or die (mysql_error());
 			
 			$i=0;
 			
-			while ($result = mysql_fetch_assoc($retorno))
+			while ($result = mysqli_fetch_assoc($retorno))
 			{
 				$i=$i+1;
 				echo "<tr>";
@@ -152,9 +152,9 @@
 				FROM recursos INNER JOIN
 				salarecurso ON recursos.id=salarecurso.id_recurso
 				WHERE salarecurso.id_sala="'.$result['id'].'" ';
-				$retorno2 = mysql_query($select2) or die (mysql_error());
+				$retorno2 = mysqli_query($con,$select2) or die (mysql_error());
 				echo "<td>";
-				while ($result2 = mysql_fetch_assoc($retorno2))
+				while ($result2 = mysqli_fetch_assoc($retorno2))
 				{
 					echo "- ".$result2['recurso']."[".$result2['quantidade']."]<br>";
 				}
@@ -188,7 +188,7 @@
 			echo "<center><a href='../inicio.php'><button type='button' class='btn btn-danger'>Cancelar</button></a></center>";
 		}
 
-		function buscaSala($id_tipo,$recursos,$capacidade,$id_bloco)
+		function buscaSala($con,$id_tipo,$recursos,$capacidade,$id_bloco)
 		{ 	$capacidade1=$capacidade-10;
 			$capacidade2=$capacidade+10;
 
@@ -209,11 +209,11 @@
 
 			$select .= " ORDER BY id DESC;";
 
-			$retorno = mysql_query($select) or die (mysql_error());
+			$retorno = mysqli_query($con,$select) or die (mysql_error());
 			
 			$i=0;
 
-			if (mysql_affected_rows()>0) {
+			if (mysqli_affected_rows()>0) {
 
 			echo "<br><center><h3><span class='glyphicon glyphicon-search' aria-hidden='true'></span> Ambientes encontrados</h3></center><br>";
 
@@ -229,7 +229,7 @@
 			echo '<td><b>HORA</b></td>';
 			echo '</tr>';
 
-			while ($result = mysql_fetch_assoc($retorno))
+			while ($result = mysqli_fetch_assoc($retorno))
 			{
 				$i=$i+1;
 				echo "<tr>";
@@ -287,7 +287,7 @@
 
 
 		//Método que lista os blocos cadastrados
-		function listaBloco()
+		function listaBloco($con)
 		{ 
 			echo "<br><center><h3><span class='glyphicon glyphicon-home' aria-hidden='true'></span> Blocos cadastrados no sistema</h3></center><br>";
 
@@ -299,11 +299,11 @@
 
 			$select = 'SELECT blocos.id, blocos.descricao FROM blocos ORDER BY id DESC';
 
-			$retorno = mysql_query($select) or die (mysql_error());
+			$retorno = mysqli_query($con,$select) or die (mysql_error());
 			
 			$i=0;
 			
-			while ($result = mysql_fetch_assoc($retorno))
+			while ($result = mysqli_fetch_assoc($retorno))
 			{
 				$i=$i+1;
 				echo "<tr>";
@@ -349,23 +349,23 @@
 		}
 
 		//Método que verifica a agenda de salas
-		function verificaAgenda($data,$horario){
+		function verificaAgenda($con,$data,$horario){
 			$horario = date('H:i:s',strtotime($horario));
 
 			$select = $sql = "SELECT usuarios.nome,agenda.motivo,agenda.id_sala,agenda.obs,agenda.tempo_uso FROM agenda,usuarios WHERE agenda.data_uso = '$data' AND agenda.hora_uso = '$horario' AND usuarios.id = agenda.id_usuario";
 			
-			$retorno = mysql_query($select) or die (mysql_error());
-			$retorno = mysql_fetch_assoc($retorno);
+			$retorno = mysqli_query($con,$select) or die (mysql_error());
+			$retorno = mysqli_fetch_assoc($retorno);
 			return $retorno;
 		}
 
 		//Método que lista as salas de um bloco para verificar disponibilidade
-		function listaSalaBloco($data,$bloco)
+		function listaSalaBloco($con,$data,$bloco)
 		{ 
 			$select = "SELECT salas.nome, salas.id  FROM salas WHERE salas.id_bloco = '$bloco' ";
-			$retorno = mysql_query($select) or die (mysql_error());
+			$retorno = mysqli_query($con,$select) or die (mysql_error());
 			
-			$count = mysql_num_rows($retorno);
+			$count = mysqli_num_rows($retorno);
 			$colspan=$count+1;
 
 			echo "<br>";
@@ -378,7 +378,7 @@
 			echo '<table align="center" class="table table-hover table-bordered table-condensed">';
 			echo "<tr class='success'><td><center><b>Horário</b></center></td>";
 
-			while ($result = mysql_fetch_assoc($retorno)){
+			while ($result = mysqli_fetch_assoc($retorno)){
 				echo "<td><center><b>".$result['nome']."</b></center></td>";				
 			}
 
@@ -394,7 +394,7 @@
 				}
 				else{
 					for ($j=1;$j<=$count;$j++){
-					$retorno = $this->verificaAgenda($data,$horario);
+					$retorno = $this->verificaAgenda($con,$data,$horario);
 					echo "<td align='center'>";
 					if($retorno!=NULL && $j==$retorno['id_sala']){
 						if ($retorno['obs']==''){
@@ -421,12 +421,12 @@
 		}
 
 		//Método que lista as salas de um bloco para verificar disponibilidade
-		function listaSalaBlocoFora($data,$bloco)
+		function listaSalaBlocoFora($con,$data,$bloco)
 		{ 
 			$select = "SELECT salas.nome, salas.id  FROM salas WHERE salas.id_bloco = '$bloco' ";
-			$retorno = mysql_query($select) or die (mysql_error());
+			$retorno = mysqli_query($con,$select) or die (mysql_error());
 			
-			$count = mysql_num_rows($retorno);
+			$count = mysqli_num_rows($retorno);
 			$colspan=$count+1;
 
 			echo "<br>";
@@ -439,7 +439,7 @@
 			echo '<table align="center" class="table table-hover table-bordered table-condensed">';
 			echo "<tr class='success'><td><center><b>Horário</b></center></td>";
 
-			while ($result = mysql_fetch_assoc($retorno)){
+			while ($result = mysqli_fetch_assoc($retorno)){
 				echo "<td><center><b>".$result['nome']."</b></center></td>";				
 			}
 
@@ -455,7 +455,7 @@
 				}
 				else{
 					for ($j=1;$j<=$count;$j++){
-					$retorno = $this->verificaAgenda($data,$horario);
+					$retorno = $this->verificaAgenda($con,$data,$horario);
 					echo "<td align='center'>";
 					if($retorno!=NULL && $j==$retorno['id_sala']){
 						if ($retorno['obs']==''){
@@ -481,13 +481,13 @@
 			//echo "<center><a href='../index.php'><button type='button' class='btn btn-danger'>Voltar</button></a></center><br>";
 		}		
 
-		function insereAgenda($id_sala,$id_usuario,$data_age,$hora_age,$data_uso,$hora_uso,$tempo_uso,$motivo,$obs,$id_bloco,$id_horario)
+		function insereAgenda($con,$id_sala,$id_usuario,$data_age,$hora_age,$data_uso,$hora_uso,$tempo_uso,$motivo,$obs,$id_bloco,$id_horario)
 		{
 			$query = "SELECT id FROM agenda WHERE id_sala='$id_sala' AND data_uso='$data_uso' AND hora_uso='$hora_uso' ";
 			
-			mysql_query($query) or die(mysql_error ());
+			mysqli_query($con,$query) or die(mysql_error ());
 			
-			if (mysql_affected_rows()>0) {
+			if (mysqli_affected_rows()>0) {
 				echo '<script language="javascript">
 				alert("Este ambiente já está ocupado nessa data, neste horário!\n\nEscolha outro.");
 				window.location="agendar_ambiente.php?id_bloco='.$id_bloco.'";
@@ -498,14 +498,14 @@
 
 				$sql="INSERT INTO agenda (id,id_sala,id_usuario,data_age,hora_age,data_uso,hora_uso,tempo_uso,motivo,obs) 
 				VALUES ('NULL','$id_sala','$id_usuario','$data_age','$hora_age','$data_uso','$hora_uso','$tempo_uso','$motivo','$obs')";
-				mysql_query($sql) or die(mysql_error ());
+				mysqli_query($con,$sql) or die(mysql_error ());
 
 				if ($tempo_uso>1) {
 					for ($aux=1;$aux<$tempo_uso;$aux++){
 						$id_horario=$id_horario+1;
 						$select = "SELECT horario FROM horario WHERE id='$id_horario' ";
-						$retorno = mysql_query($select) or die (mysql_error());
-						while ($result = mysql_fetch_assoc($retorno)) {
+						$retorno = mysqli_query($con,$select) or die (mysql_error());
+						while ($result = mysqli_fetch_assoc($retorno)) {
 							$_SESSION['horario']=$result["horario"];
 						}
 
@@ -513,7 +513,7 @@
 
 						$sql="INSERT INTO agenda (id,id_sala,id_usuario,data_age,hora_age,data_uso,hora_uso,tempo_uso,motivo,obs) 
 						VALUES ('NULL','$id_sala','$id_usuario','$data_age','$hora_age','$data_uso','$novohorario','','$motivo','$obs')";
-						mysql_query($sql) or die(mysql_error ());
+						mysqli_query($con,$sql) or die(mysql_error ());
 					}
 				}
 				echo '<script language="javascript">

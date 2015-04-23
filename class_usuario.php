@@ -30,16 +30,16 @@
 		Private $id_tipo;
 
 		//Método que valida usuário e senha no login
-		function validaUsuario($username,$passwd,$modulo)
+		function validaUsuario($con,$username,$passwd,$modulo)
 		{
 			$passwd = md5($passwd);
 
 			$query = "SELECT id,username,passwd,id_tipo,nome FROM usuarios WHERE username='$username' and passwd='$passwd'";
 			
-			$retorno = mysql_query($query);
+			$retorno = mysqli_query($con,$query);
 			
-			if (mysql_affected_rows()>0) {				
-				while ($result = mysql_fetch_assoc($retorno))
+			if (mysqli_affected_rows($con)>0) {				
+				while ($result = mysqli_fetch_assoc($retorno))
 				{
 
 					session_start();
@@ -62,13 +62,13 @@
 		}
 
 		//Método que insere novo usuário no banco
-		function insereUsuario($nome,$cpf,$telefone,$email,$username,$passwd,$obs,$data,$hora,$id_tipo)
+		function insereUsuario($con,$nome,$cpf,$telefone,$email,$username,$passwd,$obs,$data,$hora,$id_tipo)
 		{
 			$query = "SELECT username FROM usuarios WHERE username='$username' ";
 			
-			mysql_query($query);
+			mysqli_query($con,$query);
 			
-			if (mysql_affected_rows()>0) {
+			if (mysqli_affected_rows()>0) {
 				echo '<script language="javascript">
 				alert("Usuário já existente com esse username!\n\nEscolha outro.");
 				</script>';
@@ -77,7 +77,7 @@
 			else { 
 
 				$sql="INSERT INTO usuarios (id,nome,cpf,telefone,email,username,passwd,obs,data,hora,id_tipo) VALUES ('NULL','$nome','$cpf','$telefone','$email','$username','$passwd','$obs','$data','$hora','$id_tipo')";
-				mysql_query($sql) or die(mysql_error ());
+				mysqli_query($con,$sql) or die(mysql_error ());
 
 				echo "<script language='javascript'>
 				alert('Usuário cadastrado com sucesso!');
@@ -112,7 +112,7 @@
 		}
 
 		//Método que lista usuários cadastrados
-		function listaUsuario()
+		function listaUsuario($con)
 		{ 	
 			echo "<br><center><h3><span class='glyphicon glyphicon-user' aria-hidden='true'></span> Usuários cadastrados no sistema</h3></center><br>";
 
@@ -133,11 +133,11 @@
 
 			$select = 'SELECT usuarios.id, usuarios.nome, usuarios.cpf, usuarios.telefone, usuarios.email, usuarios.username, usuarios.passwd, usuarios.obs, DATE_FORMAT(usuarios.data,"%d/%m/%y") AS data, DATE_FORMAT(usuarios.hora,"%H:%i") AS hora, tipo_usuario.descricao FROM usuarios,tipo_usuario WHERE usuarios.id_tipo = tipo_usuario.id ORDER BY id DESC';
 
-			$retorno = mysql_query($select) or die (mysql_error());
+			$retorno = mysqli_query($con,$select) or die (mysql_error());
 			
 			$i=0;
 			
-			while ($result = mysql_fetch_assoc($retorno))
+			while ($result = mysqli_fetch_assoc($retorno))
 			{
 				$i=$i+1;
 				echo "<tr>";
@@ -202,7 +202,7 @@
 		}
 
 		//Método que lista tipos de usuários
-		function listaTipo()
+		function listaTipo($con)
 		{ 	
 			echo "<br><center><h3><span class='glyphicon glyphicon-user' aria-hidden='true'></span> Perfis de usuário</h3></center><br>";
 
@@ -214,11 +214,11 @@
 
 			$select = 'SELECT tipo_usuario.id, tipo_usuario.descricao FROM tipo_usuario ORDER BY id DESC';
 
-			$retorno = mysql_query($select) or die (mysql_error());
+			$retorno = mysqli_query($con,$select) or die (mysql_error());
 			
 			$i=0;
 			
-			while ($result = mysql_fetch_assoc($retorno))
+			while ($result = mysqli_fetch_assoc($retorno))
 			{
 				$i=$i+1;
 				echo "<tr>";
@@ -237,7 +237,7 @@
 			echo "<center><a href='../inicio.php'><button type='button' class='btn btn-danger'>Cancelar</button></a></center>";
 		}
 
-		function minhasReservas($id_usuario){
+		function minhasReservas($con,$id_usuario){
 			echo "<br><center><h3><span class='glyphicon glyphicon-folder-open' aria-hidden='true'></span> &nbsp;Minhas reservas</h3></center><br>";
 
 			echo '<table class="table table-hover table-bordered table-condensed" align="center">';
@@ -255,11 +255,11 @@
 
 			$select = "SELECT agenda.id AS id_agenda,salas.id,salas.nome,blocos.id,blocos.descricao,DATE_FORMAT(agenda.data_age,'%d/%m/%Y') AS data_age,DATE_FORMAT(agenda.data_uso,'%d/%m/%Y') AS data_uso,DATE_FORMAT(agenda.hora_uso,'%H:%i') AS hora_uso,agenda.tempo_uso,agenda.motivo,agenda.obs FROM salas,blocos,agenda WHERE agenda.id_sala = salas.id AND salas.id_bloco = blocos.id AND agenda.id_usuario = '$id_usuario' AND agenda.tempo_uso > 0 ORDER BY agenda.data_age DESC";
 
-			$retorno = mysql_query($select) or die (mysql_error());
+			$retorno = mysqli_query($con,$select) or die (mysql_error());
 			
 			$i=0;
 			
-			while ($result = mysql_fetch_assoc($retorno))
+			while ($result = mysqli_fetch_assoc($retorno))
 			{
 				$i=$i+1;
 				echo "<tr>";
@@ -290,15 +290,15 @@
 			echo "<center><a href='../inicio.php'><button type='button' class='btn btn-danger'>Cancelar</button></a></center>";
 		}
 
-		function excluiReserva($id_agenda,$tempo_uso) {
+		function excluiReserva($con,$id_agenda,$tempo_uso) {
 			$delete = "DELETE FROM agenda WHERE agenda.id = '$id_agenda'";
-			mysql_query($delete) or die (mysql_error());
+			mysqli_query($con,$delete) or die (mysql_error());
 
 			if ($tempo_uso>1) {
 				for ($aux=1;$aux<$tempo_uso;$aux++){
 					$id_agenda=$id_agenda+1;
 					$delete = "DELETE FROM agenda WHERE agenda.id = '$id_agenda'";
-					mysql_query($delete) or die (mysql_error());
+					mysqli_query($con,$delete) or die (mysql_error());
 				}
 			}
 			echo "<script language='javascript'>

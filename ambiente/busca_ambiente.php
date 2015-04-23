@@ -26,10 +26,10 @@
 					require "../class_sala.php";
 					
 	      			$conexao=new Banco($ip,$usuario,$senha,$bd); 
-	      			$conexao->Conecta();
+	      			$con = $conexao->Conecta();
 	      
 	      			$query = "SELECT id,descricao FROM tipo_sala";
-	      			$consulta = mysql_query($query) or die(mysql_error ());
+	      			$consulta = mysqli_query($con,$query) or die(mysql_error ());
 
 				?>
 
@@ -39,7 +39,7 @@
   					echo '<option value="all">Todos</option>';
 
   					// Armazena os dados da consulta em um array associativo
-  					while($registro = mysql_fetch_assoc($consulta)) {
+  					while($registro = mysqli_fetch_assoc($consulta)) {
         				echo '<option value='.$registro["id"].'>'.$registro["descricao"].'</option>';
   					}
   				?>
@@ -60,7 +60,7 @@
 				<b>Capacidade:</b><input type="text" class="form-control input-sm" name="capacidade" placeholder="Capacidade" title="Capacidade"><br>
 				<?php
       				$query = "SELECT id,descricao FROM blocos";
-      				$consulta = mysql_query($query) or die(mysql_error ());
+      				$consulta = mysqli_query($con,$query) or die(mysql_error ());
       			?>
 
 				<b>Bloco:</b><select class="form-control input-sm" name="bloco">
@@ -69,7 +69,7 @@
       				echo '<option value="all">Todos</option>';
   
       				// Armazena os dados da consulta em um array associativo
-      				while($registro = mysql_fetch_assoc($consulta)) {
+      				while($registro = mysqli_fetch_assoc($consulta)) {
 	        			echo '<option value='.$registro["id"].'>'.$registro["descricao"].'</option>';
       				}
       			?>
@@ -99,7 +99,7 @@
 		$recursos;
 		
 		$sala=new Sala();
-		$sala->buscaSala($id_tipo,$recursos,$capacidade,$id_bloco);
+		$sala->buscaSala($con,$id_tipo,$recursos,$capacidade,$id_bloco);
 		
 		$conexao->Disconecta(); //fecha conexão
 	}
